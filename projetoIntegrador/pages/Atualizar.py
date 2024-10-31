@@ -3,9 +3,9 @@ from classes import AtualizarPedido
 import pandas as pd
 from datetime import datetime
 
+st.set_page_config(page_title="Atualizar Pedidos", layout="wide")
+# Configuração da página - Deve ser a primeira linha do código Streamlit
 
-# Configuração da página
-st.set_page_config(page_title="Atualizar Pedidos", layout="centered")
 st.title("Atualizar Pedidos")
 
 atualizar_pedido = AtualizarPedido()
@@ -41,16 +41,22 @@ with tab1:
         novo_status = st.selectbox("Novo Status:", ["Em andamento", "Entregue"], key="status_individual")
         
         if st.button("Atualizar Status"):
-            resultado = atualizar_pedido.atualizar_status_pedido(pedido_id, novo_status)
-            st.success(resultado)
+            if novo_status:
+                resultado = atualizar_pedido.atualizar_status_pedido(pedido_id, novo_status)
+                st.success(f"Status do pedido {pedido_id} atualizado para: {novo_status}")
+            else:
+                st.error("Por favor, selecione um novo status.")
 
         # Atualização dos dados do cliente
         novo_cliente = st.text_input("Novo nome do cliente:")
         nova_observacao = st.text_input("Nova observação:")
         
         if st.button("Atualizar Dados do Cliente"):
-            resultado = atualizar_pedido.atualizar_dados_cliente(pedido_id, novo_cliente, nova_observacao)
-            st.success(resultado)
+            if novo_cliente or nova_observacao:
+                resultado = atualizar_pedido.atualizar_dados_cliente(pedido_id, novo_cliente, nova_observacao)
+                st.success(f"Dados do cliente do pedido {pedido_id} atualizados.")
+            else:
+                st.error("Por favor, preencha ao menos um dos campos para atualização.")
     else:
         st.write("Nenhum pedido encontrado para este mês.")
 
@@ -78,9 +84,12 @@ with tab2:
 
         # Botão para atualizar status com chave única
         if st.button("Atualizar Status", key="atualizar_status"):
-            for pedido in pedido_ids_selecionados:
-                pedido_id = int(pedido.split()[1])  # Extrai o ID do pedido
-                resultado = atualizar_pedido.atualizar_status_pedido(pedido_id, novo_status)
-                st.success(resultado)
+            if pedido_ids_selecionados:
+                for pedido in pedido_ids_selecionados:
+                    pedido_id = int(pedido.split()[1])  # Extrai o ID do pedido
+                    resultado = atualizar_pedido.atualizar_status_pedido(pedido_id, novo_status)
+                    st.success(f"Status do pedido {pedido_id} atualizado para: {novo_status}")
+            else:
+                st.warning("Por favor, selecione pelo menos um pedido para atualizar.")
     else:
         st.warning("Nenhum pedido encontrado para o mês selecionado.")
